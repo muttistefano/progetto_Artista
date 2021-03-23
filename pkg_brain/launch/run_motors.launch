@@ -1,0 +1,9 @@
+<launch>
+
+ 
+
+  <group ns="plat1">
+    <node name="run_plat" pkg="pkg_movimento" type="pkg_movimento_node" output="screen" />
+  </group>
+
+</launch>
