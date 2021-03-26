@@ -4,6 +4,7 @@
 platform_run::platform_run():rate_(ros::Rate(50))
 {
 
+  this->pins_setup();
   this->sub_odom_ = this->nh_.subscribe<std_msgs::Float64MultiArray>("odom_error", 1, [&] (const auto &msg) {this->odom_error_ = (*msg).data; });
   std::thread t1(&platform_run::safety_task, this);
   t1.detach();
@@ -45,6 +46,7 @@ void platform_run::pins_setup()
   //TODO in base a dove sei
   digitalWrite(PWM_dir_1,HIGH);
   digitalWrite(PWM_dir_2,HIGH);
+  ROS_DEBUG("Pin setup finished");
 
 }
 
@@ -94,7 +96,7 @@ void platform_run::move(bool forw)
       delay (3) ;
     }
     
-    for (int tm = 0 ; tm <= 3000 ; tm++)
+    for (int tm = 0 ; tm <= 2000 ; tm++)
     {
       pwmWrite (PWM_pin_1, (800 + (corr * int(this->corr_left_)) * this->safe_)) ;	
       pwmWrite (PWM_pin_2, (800 + (corr * int(this->corr_right_)) * this->safe_)) ;	
