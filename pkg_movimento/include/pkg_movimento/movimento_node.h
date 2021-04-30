@@ -7,11 +7,25 @@
 #include <iostream>
 #include <thread>
 #include <signal.h>
-
+#include <chrono>
+#include <sched.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
 #include <std_msgs/Float64MultiArray.h>
 
 #ifndef MOVIMENTO_HH
 #define MOVIMENTO_HH
+
+std::chrono::time_point<std::chrono::system_clock> timeR1 = std::chrono::high_resolution_clock::now();
+std::chrono::time_point<std::chrono::system_clock> timeR2 = std::chrono::high_resolution_clock::now();
+std::chrono::time_point<std::chrono::system_clock> timeL1 = std::chrono::high_resolution_clock::now();
+std::chrono::time_point<std::chrono::system_clock> timeL2 = std::chrono::high_resolution_clock::now();
+
+double velR1 = 0.0;
+double velR2 = 0.0;
+double velL1 = 0.0;
+double velL2 = 0.0;
 
 class platform_run
 {
@@ -37,7 +51,7 @@ class platform_run
   double corr_left_;
 
   ros::NodeHandle nh_;
-  ros::Rate rate_;
+  ros::Rate rate_ = ros::Rate(50);
 
   ros::Subscriber sub_odom_;
 
@@ -49,6 +63,11 @@ public:
   void safety_task();
 
   void move(bool forw);
+
+  // static void interruptR1();
+  // static void interruptR2();
+  // static void interruptL1();
+  // static void interruptL2();
 
 };
 
