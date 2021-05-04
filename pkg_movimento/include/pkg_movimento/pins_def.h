@@ -3,17 +3,23 @@
 
 
 
-constexpr int PWM_pin_1 = 26;   
+constexpr int PWM_pin_1 = 1;   
 constexpr int PWM_dir_1 = 27;   
 
 constexpr int PWM_pin_2 = 23;   
-constexpr int PWM_dir_2 = 24;
+constexpr int PWM_dir_2 = 25;
 
-constexpr int bumper_pin = 1;
+constexpr int bumper_pin = 27;
 
 constexpr int EncR1 = 7;
-constexpr int EncR2 = 9;
-constexpr int EncL1 = 8;
-constexpr int EncL2 = 16;
+constexpr int EncR2 = 0;
+constexpr int EncL1 = 28;
+constexpr int EncL2 = 29;
+
+constexpr int MAX_PWM_RANGE = 50;
+constexpr double acc_delay  = 15;
+
+constexpr double VIS_GAIN   = 1;
+constexpr double ENC_GAIN   = 1;
 
 #endif
