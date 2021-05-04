@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>pkg_odometria</name>
+  <name>pkg_visual_odometry</name>
   <version>0.0.0</version>
   <description>The pkg_odometria package</description>
 
