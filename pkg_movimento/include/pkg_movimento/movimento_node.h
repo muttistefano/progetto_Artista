@@ -33,9 +33,7 @@ double Counter4_ = 0 ;
 
 class platform_run
 {
-
-  //ros
-  ros::NodeHandle nh_("~");
+  
 
   //logging
   bool log_to_file_ = true;

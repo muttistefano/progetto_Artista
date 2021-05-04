@@ -7,6 +7,8 @@
 platform_run::platform_run()
 {
 
+  this->nh_ = ros::NodeHandle nh_("~");
+
   this->pins_setup();
 
   if (this->log_to_file_)
