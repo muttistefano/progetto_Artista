@@ -96,6 +96,14 @@ void platform_run::pins_setup()
 
 }
 
+void platform_run::reset_odom()
+{
+  Counter1_ = 0;
+  Counter2_ = 0;
+  Counter3_ = 0;
+  Counter4_ = 0;
+}
+
 void platform_run::odometry()
 {
   // integrare angolo

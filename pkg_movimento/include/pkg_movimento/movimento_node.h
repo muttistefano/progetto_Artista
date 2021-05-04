@@ -1,4 +1,5 @@
 #include <wiringPi.h>
+#include <softPwm.h>
 #include "ros/ros.h"
 #include <ros/console.h>
 
@@ -19,8 +20,6 @@
 #ifndef MOVIMENTO_HH
 #define MOVIMENTO_HH
 
-# define M_PI           3.1415
-
 //Encoders data
 double posR1_ = 0.0;
 double posR2_ = 0.0;
@@ -36,7 +35,7 @@ class platform_run
 {
 
   //ros
-  ros::NodeHandle nh_(~);
+  ros::NodeHandle nh_("~");
 
   //logging
   bool log_to_file_ = true;
@@ -71,31 +70,32 @@ public:
   void safety_task();
 
   void move(bool forw);
+  void reset_odom();
 
 };
 
 void interruptR1()
 {
-  ++globalCounter1 ;
-  posR1 = (Counter1/520.0) * 2.0 * M_PI * 0.06;
+  ++Counter1_ ;
+  posR1_ = (Counter1_/520.0) * 2.0 * M_PI * 0.06;
 }
 
 void interruptR2()
 {
-  ++globalCounter2 ;
-  posR2 = (Counter2/520.0) * 2.0 * M_PI * 0.06;
+  ++Counter2_ ;
+  posR2_ = (Counter2_/520.0) * 2.0 * M_PI * 0.06;
 }
 
 void interruptL1()
 {
-  ++globalCounter3 ;
-  posL1 = (Counter3/520.0) * 2.0 * M_PI * 0.06;
+  ++Counter3_ ;
+  posL1_ = (Counter3_/520.0) * 2.0 * M_PI * 0.06;
 }
 
 void interruptL2()
 {
-  ++globalCounter4 ;
-  posL2 = (Counter4/520.0) * 2.0 * M_PI * 0.06;
+  ++Counter4_ ;
+  posL2_ = (Counter4_/520.0) * 2.0 * M_PI * 0.06;
 }
 
 #endif
