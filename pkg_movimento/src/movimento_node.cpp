@@ -7,7 +7,7 @@
 platform_run::platform_run()
 {
 
-  this->nh_ = ros::NodeHandle nh_("~");
+  this->nh_ = ros::NodeHandle("~");
 
   this->pins_setup();
 
