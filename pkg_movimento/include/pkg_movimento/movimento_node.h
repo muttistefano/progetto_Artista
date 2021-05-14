@@ -2,6 +2,7 @@
 #include <softPwm.h>
 #include "ros/ros.h"
 #include <ros/console.h>
+#include<pkg_movimento/pid.cpp>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,19 +50,21 @@ class platform_run
   int safe_;
 
   // correction data
-  std::vector<double> odom_error_{  276.8,  276.8 };
-  double rho_ref   = 276.8;
-  double theta_ref = 0.0383972;
+  //TODO spunto alla partenza
+  std::vector<double> odom_error_{  240.0,  240.0 };
+  PID   *pid_pos_;
+  double rho_ref;//   = 240.0;
+  double theta_ref;// = 0.0383972;
   double corr_right_;
   double corr_left_;
 
-  ros::NodeHandle nh_;
-  ros::Rate rate_ = ros::Rate(50);
+  
+  ros::Rate rate_ = ros::Rate(20);
 
   ros::Subscriber sub_odom_;
 
 public:
-  platform_run();
+  platform_run(ros::NodeHandle nh_);
   void pins_setup();
 
   void odometry();
@@ -69,6 +72,7 @@ public:
 
   void move(bool forw);
   void reset_odom();
+  int  get_nom_speed();
 
 };
 

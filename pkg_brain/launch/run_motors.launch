@@ -3,7 +3,8 @@
  
 
   <group ns="plat1">
-    <node name="run_plat" pkg="pkg_movimento" type="pkg_movimento_node" output="screen" />
+    <node   name="run_plat" pkg="pkg_movimento" type="pkg_movimento_node" output="screen" />
+    <rosparam command="load" file="$(find pkg_brain)/cfg/config.yaml" />
   </group>
 
 </launch>

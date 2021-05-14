@@ -1,0 +1,5 @@
+rho_ref:   240.0
+theta_ref: 1.57
+movement_length: 2.0
+# pid_p :
+# pid_i :

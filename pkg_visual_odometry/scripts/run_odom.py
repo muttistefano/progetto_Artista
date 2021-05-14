@@ -68,6 +68,11 @@ class platform_odom:
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(self.fh)
 
+    def findIntersection(self,x1,y1,x2,y2,x3,y3,x4,y4):
+        px= ( (x1*y2-y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4) ) / ( (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4) ) 
+        py= ( (x1*y2-y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4) ) / ( (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4) )
+        return [px, py]
+
     def visualOdom(self):
         
         cnt = 0
@@ -88,21 +93,52 @@ class platform_odom:
             try:
                 start = time.time()
                 image = frame.array 
-                image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-                edges = cv2.Canny(image_hsv[:,:,1], 100, 250)
-                lines = cv2.HoughLines(edges,1,np.pi/180,100)
-                # print(len(lines))
-                rhos   = np.asarray([])
-                thetas = np.asarray([])
+                img_log = image.copy()
+                gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                smooth = cv2.GaussianBlur(gray, (21, 21), 0)
+                division = cv2.divide(gray, smooth, scale=255)
+                edges = cv2.Canny(division, 100, 150)
+
+                lines = cv2.HoughLines(edges,1,np.pi/180,120)
+
+                # print("len lines : ",len(lines))
+
+                rhos    = np.asarray([])
+                thetas  = np.asarray([]) 
+                rhosx   = np.asarray([])
+                thetasx = np.asarray([]) 
+                rhosy   = np.asarray([])
+                thetasy = np.asarray([]) 
+
                 for pd in lines:
                     for rho,theta in pd:
-                        if rho < 0:
-                            # continue
-                            rhos   = np.append(rhos,abs(rho))
-                            thetas = np.append(thetas,theta - (3.1415))
-                        else:
-                            rhos   = np.append(rhos,rho)
-                            thetas = np.append(thetas,theta)         
+                        rhos       = np.append(rhos,rho)
+                        thetas     = np.append(thetas,theta)  
+
+                rhos[np.argwhere(thetas>2.8)]   = - rhos[np.argwhere(thetas>2.8)] 
+                thetas[np.argwhere(thetas>2.8)] = thetas[np.argwhere(thetas>2.8)] - np.pi 
+        
+
+                idx    = thetas.argsort()
+                rhos   = rhos[idx]
+                thetas = thetas [idx]
+                grad   = np.diff(thetas)
+                id_max = np.argmax(grad)
+                if grad[id_max] > 0.5:
+                    # print("2 lines")
+                    rhosx    = rhos[:id_max+1]
+                    thetasx  = thetas[:id_max+1]
+                    rhosy    = rhos[id_max+1:]
+                    thetasy  = thetas[id_max+1:]
+                else:
+                    # print("1 line")
+                    rhosy    = rhos
+                    thetasy  = thetas       
+
+                rhox_mean = np.mean(rhosx)
+                thetax_mean = np.mean(thetasx)
+                rhoy_mean = np.mean(rhosy)
+                thetay_mean = np.mean(thetasy)
 
             except Exception as e:
                 print(e)
@@ -110,21 +146,22 @@ class platform_odom:
                 continue
 
             if self.img_debug:
-                a = np.cos(np.mean(thetas))
-                b = np.sin(np.mean(thetas))
-                x0 = a*np.mean(rhos)
-                y0 = b*np.mean(rhos)
-                x1 = int(x0 + 1000*(-b))
-                y1 = int(y0 + 1000*(a))
-                x2 = int(x0 - 1000*(-b))
-                y2 = int(y0 - 1000*(a))
-                cv2.line(image,(x1,y1),(x2,y2),(0,0,255),2)
+                if rhosx.size != 0:
+                    x2 = rhox_mean + 470* (-np.sin(thetax_mean))
+                    cv2.circle(image, (int(rhox_mean), 0), 5, (255, 255, 255), 5)
+                    cv2.circle(image, (int(x2),470 ), 5, (255, 255, 255), 5)
+                if rhosy.size != 0:
+                    y2 = rhoy_mean + 630* (-np.cos(thetay_mean))
+                    cv2.circle(image, ( 0,  int(rhoy_mean)), 5, (255, 255, 255), 5)
+                    cv2.circle(image, ( 630,int(y2)), 5, (255, 255, 255), 5)
+                if rhosx.size != 0 and rhosy.size != 0:
+                    a,b = self.findIntersection(int(rhox_mean), 0, int(x2),470 , 0,  int(rhoy_mean) , 630,int(y2))
+                    cv2.circle(image, ( int(a),int(b)), 5, (255, 255, 255), 5)
 
             if self.save_to_disk or self.img_debug:
-                list_img.append(image)
+                list_img.append(img_log)
 
-            # print(np.mean(rhos),np.mean(thetas))
-            msg = Float64MultiArray(data=[np.mean(rhos),np.mean(thetas)])
+            msg = Float64MultiArray(data=[rhoy_mean,thetay_mean])
             self.pub.publish(msg)
 
             end = time.time()
@@ -135,8 +172,6 @@ class platform_odom:
         if self.img_debug:
             print("sending debig file")
             self.logger.debug(VisualRecord(("Detected edges using sigma"),
-            # [image_hsv,image_hsv[:,:,1],edges,image], fmt = "png"))
-            # [list_img[1],list_img[2],list_img[3],list_img[4]], fmt = "png"))
             list_img, fmt = "png"))
 
             self.scp.put("demo.html",remote_path='/home/kolmogorov/Documents/ROS/artista/remote_logs')

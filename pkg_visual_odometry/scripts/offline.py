@@ -96,29 +96,28 @@ for filename in img_ls:
         #         b = np.sin(theta)
         #         x0 = a*rho
         #         y0 = b*rho
-        #         x1 = int(x0 + 500*(-b))
-        #         y1 = int(y0 + 500*(a))
-        #         x2 = int(x0 - 500*(-b))
-        #         y2 = int(y0 - 500*(a))
+        #         x1 = int(x0 + 600*(-b))
+        #         y1 = int(y0 + 600*(a))
+        #         x2 = int(x0 - 600*(-b))
+        #         y2 = int(y0 - 600*(a))
         #         cv2.line(img1,(x1,y1),(x2,y2),(0,0,255),2)
 
-
+        # print(lines)
         for pd in lines:
             for rho,theta in pd:
                 rhosorig   = np.append(rhosorig,rho)
                 thetasorig = np.append(thetasorig,theta)
-                if abs(rho) < 10:
-                    continue
-                if rho < 0:
-                    rhos   = np.append(rhos,abs(rho))
-                    thetas = np.append(thetas,theta - (3.1415))
-                else:
-                    rhos   = np.append(rhos,rho)
-                    thetas = np.append(thetas,theta)  
+                rhos       = np.append(rhos,rho)
+                thetas     = np.append(thetas,theta)  
 
+
+        rhos[np.argwhere(thetas>2.8)]   = - rhos[np.argwhere(thetas>2.8)] 
+        thetas[np.argwhere(thetas>2.8)] = thetas[np.argwhere(thetas>2.8)] - np.pi 
+        
         idx    = thetas.argsort()
         rhos   = rhos[idx]
         thetas = thetas [idx]
+        
         grad   = np.diff(thetas)
         id_max = np.argmax(grad)
         if grad[id_max] > 0.5:
@@ -129,8 +128,26 @@ for filename in img_ls:
             thetasy  = thetas[id_max+1:]
         else:
             print("1 line")
-            rhosx    = rhos
-            thetasx  = thetas
+            rhosy    = rhos
+            thetasy  = thetas
+        #     if np.mean(thetas) > np.pi/2.0:
+        #         rhosy    = rhos[:id_max+1]
+        #         thetasy  = thetas[:id_max+1]
+        #         rhosx    = -rhos[id_max+1:]
+        #         thetasx  =  np.pi - thetas[id_max+1:]
+        #     else:
+        #         rhosx    = rhos[:id_max+1]
+        #         thetasx  = thetas[:id_max+1]
+        #         rhosy    = rhos[id_max+1:]
+        #         thetasy  = thetas[id_max+1:]
+        # else:
+        #     print("1 line")
+        #     if np.mean(thetas) > np.pi/2.0:
+        #         rhosx    = -rhos
+        #         thetasx  = np.pi - thetas 
+        #     else:
+        #         rhosx    = rhos
+        #         thetasx  = thetas
         
         
         
@@ -158,19 +175,19 @@ for filename in img_ls:
             
             cv2.circle(img1, ( int(a),int(b)), 5, (255, 255, 255), 5)
 
-        print("max id: ",id_max)
-        print(rhosorig)
-        print(thetasorig,"\n\n")
-        print(rhos)
-        print(thetas)
-        # print(grad,"\n\n\n\n\n\n")
-        # print("X Data")
+        # print("max id: ",id_max)
+        # print(rhosorig)
+        # print(thetasorig,"\n\n")
+        # print(rhos)
+        # print(thetas,"\n\n")
+        # # print(grad,"\n\n\n\n\n\n")
+        # # print("X Data")
         # print(rhosx)
         # print(thetasx,"\n\n")
-        # print("Y Data")
+        # # print("Y Data")
         # print(rhosy)
         # print(thetasy,"\n\n\n\n\n\n\n\n\n\n\n")
-
+        print(rhoy_mean,thetay_mean)
 
         # cv2.imshow('imagegsv0',image_hsv[:,:,0])
         # cv2.imshow('imagegsv1',image_hsv[:,:,1])

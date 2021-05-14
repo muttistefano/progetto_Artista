@@ -4,13 +4,13 @@
 
   <group ns="plat1">
     <!-- <node name="run_plat" pkg="pkg_movimento" type="pkg_movimento_node" output="screen" launch-prefix="sudo -E" /> -->
-    <param name="debug" value="false"/>
+    <!-- <param name="debug" value="false"/> -->
     <param name="img_debug" value="false"/>
     
-    <param name="save_to_disk" value="true"/>
-    <param name="img_d_num" value="300"/>
+    <param name="save_to_disk" value="false"/>
+    <param name="img_d_num" value="100"/>
     
-    <node name="play_odom" pkg="pkg_odometria" type="run_odom.py" output="screen"  />
+    <node name="play_odom" pkg="pkg_visual_odometry" type="run_odom.py" output="screen"  />
   </group>
 
 </launch>
